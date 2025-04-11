@@ -1,7 +1,7 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+import axios from 'axios';
+import cheerio from 'cheerio';
 
-exports.scrapeHealthSchemes = async () => {
+export const scrapeHealthSchemes = async () => {
   try {
     // Replace with the actual URL of the government health schemes page
     const response = await axios.get('https://www.example.gov/health-schemes');

@@ -1,40 +1,25 @@
 import mongoose from 'mongoose';
 
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   fitfullUserId: { type: String, required: true },
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   avatar: String,
+  mobileNumber: { type: String, required: true },
   googleId: String,
   authProvider: { type: String, default: 'google' },
-  role: { type: String, enum: ['fitfull', 'pharmacy', 'volunteer'], default: 'fitfull' },
   proofs: [{
     type: String // E.g. file path or URL for proof document
   }],
-  credentials: {
-    institution: String,
-    graduationYear: Number,
-    currentStatus: { type: String, enum: ['Graduated', 'Pursuing'] }
-  },
-  tokens: {
-    googleFitToken: String,
-    googleFitTokenExpiry: Date,
-    refreshToken: String
-  },
   username: String,
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  // Added fields for OTP verification
+  otp: { type: String },
+  otpExpiry: { type: Date },
+  isVerified: { type: Boolean, default: false }
 });
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-      userSchema.methods.isPasswordCorrect = async function (password) {
-        return await bcrypt.compare(password, this.password);
-      };
       
       userSchema.methods.generateAccessToken = function () {
         return jwt.sign(

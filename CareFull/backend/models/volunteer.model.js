@@ -2,7 +2,6 @@
 import mongoose from "mongoose";
 
 const VolunteerSchema = new mongoose.Schema({
-  fitfullDoctorId: { type: String, required: true, unique: true }, // reference to the verified MBBS graduate in Fitfull
   name: { type: String, required: true },
   specialties: [String], // e.g., pediatrics, elderly care
   password: { type: String, required: true },
@@ -12,7 +11,6 @@ const VolunteerSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// Check if model already exists to prevent overwrite error during hot reloading
-const Volunteer = mongoose.models.Volunteer || mongoose.model('Volunteer', VolunteerSchema);
+const Volunteer = mongoose.model('Volunteer', VolunteerSchema);
 
 export default Volunteer;
