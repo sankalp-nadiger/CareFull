@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const VolunteerSchema = new mongoose.Schema({
   fitfullDoctorId: { type: String, required: true }, // reference to the verified MBBS graduate in Fitfull
@@ -10,4 +10,5 @@ const VolunteerSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Volunteer', VolunteerSchema);
+ const volunteer =mongoose.model('Volunteer', VolunteerSchema);
+export default volunteer;

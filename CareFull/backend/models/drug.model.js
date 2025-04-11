@@ -1,5 +1,4 @@
-// models/Drug.js
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const DrugSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -8,4 +7,6 @@ const DrugSchema = new mongoose.Schema({
   manufacturer: String
 });
 
-module.exports = mongoose.model('Drug', DrugSchema);
+const Drug = mongoose.model('Drug', DrugSchema);
+
+export default Drug;

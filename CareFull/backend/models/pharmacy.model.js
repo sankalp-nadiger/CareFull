@@ -1,5 +1,5 @@
 // models/Pharmacy.js
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const PharmacySchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -13,5 +13,5 @@ const PharmacySchema = new mongoose.Schema({
     lowStockThreshold: { type: Number, default: 5 }
   }]
 });
-
-module.exports = mongoose.model('Pharmacy', PharmacySchema);
+const pharmacy=mongoose.model('pharmacy', pharmacySchema);
+export default pharmacy;

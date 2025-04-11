@@ -1,5 +1,6 @@
 // models/Order.js
-const mongoose = require('mongoose');
+import mongoose from "mongoose"
+
 
 const OrderSchema = new mongoose.Schema({
   patientFitfullId: { type: String, required: true }, // reference to Fitfull patient
@@ -11,5 +12,5 @@ const OrderSchema = new mongoose.Schema({
   status: { type: String, enum: ['Pending', 'Processed', 'Delivered'], default: 'Pending' },
   createdAt: { type: Date, default: Date.now }
 });
-
-module.exports = mongoose.model('Order', OrderSchema);
+const order= mongoose.model('order', OrderSchema);
+export default order;

@@ -1,5 +1,4 @@
-// models/HealthScheme.js
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const HealthSchemeSchema = new mongoose.Schema({
   title: String,
@@ -8,4 +7,6 @@ const HealthSchemeSchema = new mongoose.Schema({
   effectiveDate: Date
 });
 
-module.exports = mongoose.model('HealthScheme', HealthSchemeSchema);
+const HealthScheme = mongoose.model('HealthScheme', HealthSchemeSchema);
+
+export default HealthScheme;
