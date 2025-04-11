@@ -1,23 +1,28 @@
 // controllers/volunteerController.js
-const Volunteer = require('../models/Volunteer');
 
-exports.registerVolunteer = async (req, res) => {
-  // Validate MBBS graduate via a verification process
+import Volunteer from '../models/Volunteer.js';
+
+// Register a new volunteer (MBBS graduate)
+export const registerVolunteer = async (req, res) => {
   try {
     const volunteer = new Volunteer(req.body);
-    // TODO: Add verification step via hospital/university API integration
+
+    // TODO: Add MBBS degree verification logic here
+    // e.g., Call hospital/university verification API before saving
+
     await volunteer.save();
-    res.status(201).json(volunteer);
+    res.status(201).json({ message: 'Volunteer registered successfully', volunteer });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Volunteer registration failed', details: err.message });
   }
 };
 
-exports.getVolunteers = async (req, res) => {
+// Get list of all registered volunteers
+export const getVolunteers = async (req, res) => {
   try {
     const volunteers = await Volunteer.find();
-    res.json(volunteers);
+    res.status(200).json(volunteers);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Failed to fetch volunteers', details: err.message });
   }
 };

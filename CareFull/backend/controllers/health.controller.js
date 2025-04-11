@@ -1,6 +1,9 @@
-const { scrapeHealthNews } = require('../services/scrapeNews');
+// controllers/newsController.js or wherever it's located
 
-exports.getHealthNews = async (req, res) => {
+import { scrapeHealthNews } from '../services/scrapeNews.js';
+import { scrapeHealthSchemes } from '../services/scrapeSchemes.js';
+
+export const getHealthNews = async (req, res) => {
   try {
     const news = await scrapeHealthNews();
     res.json(news);
@@ -9,9 +12,7 @@ exports.getHealthNews = async (req, res) => {
   }
 };
 
-const { scrapeHealthSchemes } = require('../services/scrapeSchemes');
-
-exports.getHealthSchemes = async (req, res) => {
+export const getHealthSchemes = async (req, res) => {
   try {
     const schemes = await scrapeHealthSchemes();
     res.json(schemes);
