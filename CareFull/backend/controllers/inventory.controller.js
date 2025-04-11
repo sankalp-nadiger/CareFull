@@ -2,7 +2,7 @@
 
 import Pharmacy from '../models/Pharmacy.model.js';
 // import Drug from '../models/Drug.js';
-import sendLowStockEmail from '../utils/email.js';
+// import sendLowStockEmail from '../utils/email.js';
 
 // Get all low stock drugs for a pharmacy
 export const getLowStockDrugs = async (req, res) => {

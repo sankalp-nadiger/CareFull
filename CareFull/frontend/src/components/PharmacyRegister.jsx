@@ -98,40 +98,33 @@ export default function PharmacyRegistration() {
         supplier => supplier.name || supplier.email || supplier.phone
       );
       
-      // In a real app, this would be your API call
-      // const response = await fetch('/api/pharmacy/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     name: formData.name,
-      //     email: formData.email,
-      //     password: formData.password,
-      //     location: formData.location,
-      //     suppliers: filteredSuppliers
-      //   })
-      // });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate successful registration
-      const mockResponse = {
-        message: 'Pharmacist registered successfully',
-        token: 'mock-jwt-token',
-        pharmacist: {
-          id: 'mock-id-123',
+      // API call to register pharmacy
+      const response = await fetch('http://localhost:8000/api/pharmacy/register', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          location: formData.location
-        }
-      };
+          password: formData.password,
+          location: formData.location,
+          suppliers: filteredSuppliers
+        })
+      });
       
-      // Store token in localStorage/sessionStorage
-      localStorage.setItem('pharmacyToken', mockResponse.token);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+      
+      // Store token in localStorage
+      localStorage.setItem('pharmacyToken', data.token);
       
       setNotification({
         type: 'success',
-        message: 'Registration successful! Redirecting to dashboard...'
+        message: data.message || 'Registration successful! Redirecting to dashboard...'
       });
       
       // Redirect after 2 seconds
@@ -143,7 +136,7 @@ export default function PharmacyRegistration() {
       console.error('Registration error:', error);
       setNotification({
         type: 'error',
-        message: 'Registration failed. Please try again.'
+        message: error.message || 'Registration failed. Please try again.'
       });
     } finally {
       setLoading(false);

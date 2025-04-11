@@ -1,18 +1,25 @@
-import express from 'express';
+ import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-import authRoutes from './routes/auth.routes.js';
-import inventoryRoutes from './routes/inventory.routes..js';
+import PharmacyRouter from './routes/pharmacy.routes.js';
+import inventoryRoutes from './routes/inventory.routes.js';
 import onboardingRoutes from './routes/onboard.routes.js';
 
 dotenv.config();
+import mongoose from 'mongoose';
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Middleware
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('MongoDB connected'))
+.catch((err) => console.error('MongoDB connection error:', err));
+
+// Middl
 app.use(cors());
 app.use(express.json());
 
@@ -22,12 +29,12 @@ app.get('/', (req, res) => {
 });
 
 // API Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/pharmacy', PharmacyRouter);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/onboard', onboardingRoutes);
 
 // Connect to MongoDB and start the server
-mongoose
+mongoose 
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

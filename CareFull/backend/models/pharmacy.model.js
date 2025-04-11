@@ -1,7 +1,7 @@
 // models/Pharmacy.js
 import mongoose from "mongoose";
 
-const PharmacySchema = new mongoose.Schema({
+const pharmacySchema = new mongoose.Schema({
   name: { type: String, required: true },
   location: {
     address: String,

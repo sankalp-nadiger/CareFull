@@ -1,13 +1,29 @@
+
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+import pharmacy from '../models/Pharmacy.model.js';
 export const registerPharmacist = async (req, res) => {
   const { name, email, password, location, suppliers } = req.body;
   const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+  
   try {
-    const existing = await Pharmacy.findOne({ email });
-    if (existing) return res.status(400).json({ error: 'Email already registered.' });
+    // Validate required fields
+    if (!name || !email || !password || !location) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
+    // Check if email already exists
+    const existing = await pharmacy.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ error: 'Email already registered.' });
+    }
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newPharmacy = new Pharmacy({
+    // Create new pharmacy
+    const newPharmacy = new pharmacy({
       name,
       email,
       password: hashedPassword,
@@ -15,10 +31,13 @@ export const registerPharmacist = async (req, res) => {
       suppliers: suppliers || []
     });
 
+    // Save to database
     await newPharmacy.save();
 
+    // Generate JWT token
     const token = jwt.sign({ id: newPharmacy._id }, JWT_SECRET, { expiresIn: '1d' });
 
+    // Return success response
     res.status(201).json({
       message: 'Pharmacist registered successfully',
       token,
@@ -31,8 +50,12 @@ export const registerPharmacist = async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ error: 'Registration failed', details: err.message });
-  }
+    console.error('Registration error:', err);
+    res.status(500).json({ 
+      error: 'Registration failed', 
+      details: err.message 
+    });
+  }  
 };
 export const loginPharmacist = async (req, res) => {
   const { email, password } = req.body;

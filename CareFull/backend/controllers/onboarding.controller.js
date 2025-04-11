@@ -1,7 +1,7 @@
 // controllers/pharmacyController.js
 
 import Pharmacy from '../models/Pharmacy.model.js';
-import Drug from '../models/drug.js';
+import Drug from '../models/drug.model.js';
 
 // Step 1: Get supplier list from the pharmacy model
 export const getSuppliersForDropdown = async (req, res) => {
