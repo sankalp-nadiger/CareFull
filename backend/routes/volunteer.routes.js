@@ -1,15 +1,96 @@
-// pages/api/volunteer/register.js
-import dbConnect from '../../../utils/dbConnect';
-import Volunteer from '../../../models/Volunteer';
-import bcrypt from 'bcryptjs';
+import express from 'express';
+import { registerVolunteer, getVolunteers } from '../controllers/volunteer.controller.js';
+import { upload } from '../middleware/multer.middleware.js';
+import { userAuth } from '../middleware/auth.middleware.js';
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
+const router = express.Router();
 
-  await dbConnect();
+/**
+ * @swagger
+ * /api/volunteers/register:
+ *   post:
+ *     summary: Register as a medical volunteer
+ *     tags: [Volunteers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - phone
+ *               - qualification
+ *               - certificateImage
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               qualification:
+ *                 type: string
+ *               specialization:
+ *                 type: string
+ *               availability:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               certificateImage:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Volunteer registered successfully
+ *       400:
+ *         description: Invalid input
+ */
+router.post('/register', upload.single('certificateImage'), registerVolunteer);
 
+/**
+ * @swagger
+ * /api/volunteers:
+ *   get:
+ *     summary: Get list of available volunteers
+ *     tags: [Volunteers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: specialization
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: availability
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of volunteers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   name:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   qualification:
+ *                     type: string
+ *                   specialization:
+ *                     type: string
+ *                   availability:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ */
+router.get('/', userAuth, getVolunteers);
+{
   try {
     const { fitfullDoctorId, name, specialties, password } = req.body;
 
