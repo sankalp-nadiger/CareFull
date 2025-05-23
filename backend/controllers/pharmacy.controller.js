@@ -2,7 +2,6 @@ import Pharmacy from '../models/pharmacy.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-import pharmacy from '../models/Pharmacy.model.js';
 export const registerPharmacist = async (req, res) => {
   const { name, email, password, location, suppliers } = req.body;
   const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
@@ -14,7 +13,7 @@ export const registerPharmacist = async (req, res) => {
     }
 
     // Check if email already exists
-    const existing = await pharmacy.findOne({ email });
+    const existing = await Pharmacy.findOne({ email });
     if (existing) {
       return res.status(400).json({ error: 'Email already registered.' });
     }
