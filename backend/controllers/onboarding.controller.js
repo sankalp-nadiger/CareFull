@@ -1,6 +1,6 @@
 // controllers/pharmacyController.js
 
-import Pharmacy from '../models/Pharmacy.model.js';
+import Pharmacy from '../models/pharmacy.model.js';
 import Drug from '../models/drug.model.js';
 
 // Step 1: Get supplier list from the pharmacy model

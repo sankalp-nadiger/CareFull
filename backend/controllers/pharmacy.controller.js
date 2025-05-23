@@ -1,4 +1,4 @@
-import Pharmacy from '../models/Pharmacy.model.js';
+import Pharmacy from '../models/pharmacy.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
