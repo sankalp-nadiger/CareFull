@@ -1,8 +1,21 @@
 import express from "express";
 import User from "../models/user.model.js";
-import { user_verifyJWT} from "../middlewares/auth.middleware.js";
+import { userAuth } from "../middleware/auth.middleware.js";
 const router = express.Router();
-router.get('/api/sync-users', async (req, res) => {
+
+/**
+ * @swagger
+ * /api/auth/sync-users:
+ *   get:
+ *     summary: Synchronize users from external system
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Users synced successfully
+ *       500:
+ *         description: Failed to sync users
+ */
+router.get('/sync-users', async (req, res) => {
     try {
       await fetchAndStoreUsers();
       res.status(200).json({ message: 'Users synced successfully' });
@@ -10,7 +23,33 @@ router.get('/api/sync-users', async (req, res) => {
       res.status(500).json({ error: 'Failed to sync users' });
     }
   });
-  router.post('http://localhost:8000/api/auth/send-otp', async (req, res) => {
+  /**
+   * @swagger
+   * /api/auth/send-otp:
+   *   post:
+   *     summary: Send OTP to user's mobile number
+   *     tags: [Auth]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - mobileNumber
+   *             properties:
+   *               mobileNumber:
+   *                 type: string
+   *                 description: User's mobile number
+   *     responses:
+   *       200:
+   *         description: OTP sent successfully
+   *       404:
+   *         description: User not found
+   *       500:
+   *         description: Failed to send OTP
+   */
+  router.post('/send-otp', async (req, res) => {
     try {
       const { mobileNumber } = req.body;
       
@@ -43,9 +82,59 @@ router.get('/api/sync-users', async (req, res) => {
       res.status(500).json({ error: 'Failed to send OTP' });
     }
   });
-  
-  // Verify OTP
-  router.post('http://localhost:8000/api/auth/verify-otp', async (req, res) => {
+    /**
+   * @swagger
+   * /api/auth/verify-otp:
+   *   post:
+   *     summary: Verify OTP and authenticate user
+   *     tags: [Auth]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - mobileNumber
+   *               - otp
+   *             properties:
+   *               mobileNumber:
+   *                 type: string
+   *                 description: User's mobile number
+   *               otp:
+   *                 type: string
+   *                 description: The OTP received by user
+   *     responses:
+   *       200:
+   *         description: OTP verified successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                 token:
+   *                   type: string
+   *                 user:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                     fullName:
+   *                       type: string
+   *                     email:
+   *                       type: string
+   *                     avatar:
+   *                       type: string
+   *       400:
+   *         description: Invalid or expired OTP
+   *       404:
+   *         description: User not found
+   *       500:
+   *         description: Failed to verify OTP
+   */
+  router.post('/verify-otp', async (req, res) => {
     try {
       const { mobileNumber, otp } = req.body;
       
@@ -89,9 +178,43 @@ router.get('/api/sync-users', async (req, res) => {
       res.status(500).json({ error: 'Failed to verify OTP' });
     }
   });
-  
-  // Get current user data
-  router.get('/api/auth/user', authenticateToken, async (req, res) => {
+    /**
+   * @swagger
+   * /api/auth/user:
+   *   get:
+   *     summary: Get current authenticated user's data
+   *     tags: [Auth]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: User data retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 _id:
+   *                   type: string
+   *                 fullName:
+   *                   type: string
+   *                 email:
+   *                   type: string
+   *                 avatar:
+   *                   type: string
+   *                 mobileNumber:
+   *                   type: string
+   *                 role:
+   *                   type: string
+   *                   enum: [user, pharmacist, admin]
+   *       401:
+   *         description: Unauthorized - Invalid or missing token
+   *       404:
+   *         description: User not found
+   *       500:
+   *         description: Failed to get user data
+   */
+  router.get('/user', userAuth, async (req, res) => {
     try {
       const user = await User.findById(req.userId).select('-otp -otpExpiry -password');
       if (!user) {
@@ -103,25 +226,5 @@ router.get('/api/sync-users', async (req, res) => {
     }
   });
   
-  // JWT Authentication middleware
-  import jwt from 'jsonwebtoken';
-  
-  function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
-    }
-    
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(403).json({ error: 'Invalid or expired token' });
-      }
-      
-      req.userId = decoded.userId;
-      next();
-    });
-  }  
 
   export default router;

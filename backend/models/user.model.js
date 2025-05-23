@@ -10,24 +10,27 @@ const userSchema = new mongoose.Schema({
   authProvider: { type: String, default: 'google' },
   proofs: [{
     type: String // E.g. file path or URL for proof document
-  }],
-  username: String,
+  }],  username: String,
   createdAt: { type: Date, default: Date.now },
   // Added fields for OTP verification
   otp: { type: String },
   otpExpiry: { type: Date },
-  isVerified: { type: Boolean, default: false }
+  isVerified: { type: Boolean, default: false },
+  role: { 
+    type: String, 
+    enum: ['user', 'pharmacist', 'admin'],
+    default: 'user'
+  }
 });
 
-
-      
-      userSchema.methods.generateAccessToken = function () {
+    userSchema.methods.generateAccessToken = function () {
         return jwt.sign(
           {
             _id: this._id,
             email: this.email,
             username: this.username,
             fullName: this.fullName,
+            role: this.role,
           },
           process.env.ACCESS_TOKEN_SECRET,
           {
@@ -48,4 +51,5 @@ const userSchema = new mongoose.Schema({
       };
 
 
-export const User= mongoose.model("User", userSchema)
+const User= mongoose.model("User", userSchema)
+export default User;

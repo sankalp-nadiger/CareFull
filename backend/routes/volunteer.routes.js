@@ -2,6 +2,9 @@ import express from 'express';
 import { registerVolunteer, getVolunteers } from '../controllers/volunteer.controller.js';
 import { upload } from '../middleware/multer.middleware.js';
 import { userAuth } from '../middleware/auth.middleware.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import Volunteer from '../models/volunteer.model.js';
 
 const router = express.Router();
 
@@ -90,62 +93,9 @@ router.post('/register', upload.single('certificateImage'), registerVolunteer);
  *                       type: string
  */
 router.get('/', userAuth, getVolunteers);
-{
-  try {
-    const { fitfullDoctorId, name, specialties, password } = req.body;
 
-    // Check if volunteer already exists
-    const existingVolunteer = await Volunteer.findOne({ fitfullDoctorId });
-    if (existingVolunteer) {
-      return res.status(400).json({ message: 'Volunteer with this Doctor ID already exists' });
-    }
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create new volunteer document
-    const volunteer = new Volunteer({
-      fitfullDoctorId,
-      name,
-      specialties,
-      password: hashedPassword, // Store hashed password
-      verified: false, // Default to unverified
-    });
-
-    // Save to database
-    await volunteer.save();
-
-    // Return success but don't include password in response
-    const volunteerResponse = volunteer.toObject();
-    delete volunteerResponse.password;
-    
-    res.status(201).json({ 
-      message: 'Volunteer registered successfully', 
-      volunteer: volunteerResponse 
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ 
-      message: 'Registration failed',
-      details: error.message
-    });
-  }
-}
-
-// pages/api/volunteer/signin.js
-import dbConnect from '../../../utils/dbConnect';
-import Volunteer from '../../../models/Volunteer';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
-  await dbConnect();
-
+// Volunteer sign in route
+router.post('/signin', async (req, res) => {
   try {
     const { fitfullDoctorId, password } = req.body;
 
@@ -189,4 +139,6 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
+});
+
+export default router;
