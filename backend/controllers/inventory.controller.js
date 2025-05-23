@@ -1,4 +1,4 @@
-import Pharmacy from '../models/Pharmacy.model.js';
+import Pharmacy from '../models/pharmacy.model.js';
 import Drug from '../models/drug.model.js';
 import sendLowStockEmail from '../utils/email.js';
 
