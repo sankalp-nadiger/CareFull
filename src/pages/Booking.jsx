@@ -19,7 +19,7 @@ import {
 const Navbar = ({ currentPage = 'Booking' }) => {
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Booking', href: '/booking' },
+    { name: 'Emergency', href: '/booking' },
     { name: 'Inventory', href: '/inventory' },
     { name: 'Order', href: '/reorder' },
   ];

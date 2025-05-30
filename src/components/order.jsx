@@ -4,7 +4,7 @@ import { Heart } from 'lucide-react';
 const Navbar = ({ currentPage = 'Home' }) => {
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Booking', href: '/booking' },
+    { name: 'Emergency', href: '/booking' },
     { name: 'Inventory', href: '/inventory' },
     { name: 'Order', href: '/reorder' },
   ];
