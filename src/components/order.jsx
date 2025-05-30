@@ -58,8 +58,8 @@ const Navbar = ({ currentPage = 'Home' }) => {
   );
 };
 
-export default function PharmacyReorderPage() {
-  const [lowStockItems, setLowStockItems] = useState([]);
+export default function PharmacyOrderPage() {
+  const [allMedicines, setAllMedicines] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [orderStatus, setOrderStatus] = useState(null);
@@ -67,6 +67,7 @@ export default function PharmacyReorderPage() {
   const [showPayment, setShowPayment] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('credit_card');
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [paymentData, setPaymentData] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -82,27 +83,35 @@ export default function PharmacyReorderPage() {
   });
   
   useEffect(() => {
-    const fetchLowStockItems = async () => {
+    const fetchAllMedicines = async () => {
       try {
         setLoading(true);
-        const data = {
-          lowStockItems: [
-            { drugId: '1001', name: 'Amoxicillin', manufacturer: 'Pfizer', quantity: 3, price: 999.99, lowStockThreshold: 5, supplierName: 'MedSupply Inc.' },
-            { drugId: '1002', name: 'Lisinopril', manufacturer: 'Novartis', quantity: 2, price: 650.50, lowStockThreshold: 5, supplierName: 'PharmaDist' },
-            { drugId: '1003', name: 'Metformin', manufacturer: 'Merck', quantity: 0, price: 1275.75, lowStockThreshold: 5, supplierName: 'MedSupply Inc.' },
-            { drugId: '1004', name: 'Simvastatin', manufacturer: 'AstraZeneca', quantity: 4, price: 1830.30, lowStockThreshold: 10, supplierName: 'GlobalMeds' }
-          ]
-        };
-        setLowStockItems(data.lowStockItems);
+        // Simulated data - in a real app, this would come from an API
+        const data = [
+          { drugId: '1001', name: 'Amoxicillin', manufacturer: 'Pfizer', price: 999.99, supplierName: 'MedSupply Inc.' },
+          { drugId: '1002', name: 'Lisinopril', manufacturer: 'Novartis', price: 650.50, supplierName: 'PharmaDist' },
+          { drugId: '1003', name: 'Metformin', manufacturer: 'Merck', price: 1275.75, supplierName: 'MedSupply Inc.' },
+          { drugId: '1004', name: 'Simvastatin', manufacturer: 'AstraZeneca', price: 1830.30, supplierName: 'GlobalMeds' },
+          { drugId: '1005', name: 'Atorvastatin', manufacturer: 'Pfizer', price: 1450.00, supplierName: 'PharmaDist' },
+          { drugId: '1006', name: 'Omeprazole', manufacturer: 'AstraZeneca', price: 850.25, supplierName: 'GlobalMeds' },
+          { drugId: '1007', name: 'Losartan', manufacturer: 'Merck', price: 920.50, supplierName: 'MedSupply Inc.' },
+          { drugId: '1008', name: 'Albuterol', manufacturer: 'GSK', price: 1120.75, supplierName: 'PharmaDist' }
+        ];
+        setAllMedicines(data);
       } catch (error) {
-        console.error('Error fetching low stock items:', error);
+        console.error('Error fetching medicines:', error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchLowStockItems();
+    fetchAllMedicines();
   }, [pharmacyId]);
+
+  const filteredMedicines = allMedicines.filter(medicine =>
+    medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    medicine.manufacturer.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   
   const handleQuantityChange = (drugId, quantity) => {
     const updatedItems = selectedItems.map(item => 
@@ -110,7 +119,7 @@ export default function PharmacyReorderPage() {
     );
     
     if (!updatedItems.some(item => item.drugId === drugId)) {
-      const itemToAdd = lowStockItems.find(item => item.drugId === drugId);
+      const itemToAdd = allMedicines.find(item => item.drugId === drugId);
       updatedItems.push({ ...itemToAdd, orderQuantity: parseInt(quantity) || 0 });
     }
     
@@ -278,7 +287,7 @@ export default function PharmacyReorderPage() {
     setShowPayment(false);
   };
 
-  if (loading && lowStockItems.length === 0) {
+  if (loading && allMedicines.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 px-6">
         <div className="max-w-7xl mx-auto">
@@ -320,7 +329,7 @@ export default function PharmacyReorderPage() {
                       <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-semibold text-gray-800">Place Reorder</h2>
+                  <h2 className="text-2xl font-semibold text-gray-800">Place Medicine Order</h2>
                 </div>
 
                 <div className="bg-blue-50 p-4 mb-6 rounded-lg">
@@ -331,10 +340,27 @@ export default function PharmacyReorderPage() {
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-blue-800">Reorder Low Stock Items</h3>
+                      <h3 className="text-sm font-medium text-blue-800">Order Medicines</h3>
                       <p className="text-sm text-blue-700 mt-1">
-                        Enter the quantity for each item you want to reorder. You'll be able to review and pay before finalizing your order.
+                        Search for medicines and enter the quantity you want to order. You'll be able to review and pay before finalizing your order.
                       </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search medicines by name or manufacturer..."
+                      className="w-full border rounded-lg px-4 py-2 pl-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <div className="absolute left-3 top-2.5 text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                      </svg>
                     </div>
                   </div>
                 </div>
@@ -345,14 +371,13 @@ export default function PharmacyReorderPage() {
                       <tr className="text-left text-gray-500 text-sm border-b">
                         <th className="px-4 py-2 font-medium">Product name</th>
                         <th className="px-4 py-2 font-medium">Manufacturer</th>
-                        <th className="px-4 py-2 font-medium">Current stock</th>
                         <th className="px-4 py-2 font-medium">Price</th>
                         <th className="px-4 py-2 font-medium">Supplier</th>
                         <th className="px-4 py-2 font-medium">Order quantity</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {lowStockItems.map((item) => (
+                      {filteredMedicines.map((item) => (
                         <tr key={item.drugId} className="border-b border-gray-100 hover:bg-blue-50">
                           <td className="px-4 py-3 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
@@ -361,15 +386,6 @@ export default function PharmacyReorderPage() {
                             {item.name}
                           </td>
                           <td className="px-4 py-3">{item.manufacturer}</td>
-                          <td className="px-4 py-3">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              item.quantity === 0 
-                                ? 'bg-red-100 text-red-800' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {item.quantity} units
-                            </span>
-                          </td>
                           <td className="px-4 py-3">₹{item.price.toFixed(2)}</td>
                           <td className="px-4 py-3">{item.supplierName}</td>
                           <td className="px-4 py-3">
@@ -605,21 +621,20 @@ export default function PharmacyReorderPage() {
                       <span className="flex items-center">
                         <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-        
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    {paymentLoading ? 'Processing Payment...' : 'Placing Order...'}
-                  </span>
-                ) : (
-                  `Complete Order - $${getTotalCost()}`
-                )}
-              </button>
-            </div>
-          </>
-        )}
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {paymentLoading ? 'Processing Payment...' : 'Placing Order...'}
+                      </span>
+                    ) : (
+                      `Complete Order - ₹${getTotalCost()}`
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  </div>
-  );
+    </div>
+  );
 }

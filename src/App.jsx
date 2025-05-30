@@ -4,7 +4,7 @@ import {BrowserRouter as Router,Routes,Route} from "react-router-dom"
 import PharmacistOnboardingStatic from './components/Onboarding'
 import DeepSeekChat from './components/Sample'
 import LowStockManagement from './components/Inventory'
-import PharmacyReorderPage from './components/order'
+import PharmacyOrderPage from './components/order'
 import PharmacyRegistration from './components/PharmacyRegister'
 import PharmacyLogin from './components/PharmacyLogin'
 import VolunteerAuth from './components/Volunteer'
@@ -25,7 +25,7 @@ function App() {
         <Route path="/Onboarding" element={<PharmacistOnboardingStatic/>}/>
         <Route path="/deepseek" element={<DeepSeekChat/>}/>
         <Route path="/inventory" element={<LowStockManagement/>}/>
-        <Route path="/Reorder" element={<PharmacyReorderPage/>}/>
+        <Route path="/reorder" element={<PharmacyOrderPage/>}/>
         <Route path="/register" element={<PharmacyRegistration/>}/>
         <Route path="/login" element={<PharmacyLogin/>}/>
         <Route path="/Volunteer" element={<VolunteerAuth/>}/>
